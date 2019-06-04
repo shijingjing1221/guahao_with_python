@@ -34,7 +34,7 @@ class TestTemplate(unittest.TestCase):
         #chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
-        self.driver.implicitly_wait(100)
+        self.driver.implicitly_wait(10)
         f = open("Settings.json") 
         self.settings = json.load(f)
 
@@ -133,11 +133,11 @@ class TestTemplate(unittest.TestCase):
         #self.waitAndClickByXpath()
         youhao_loaded=False
         while youhao_loaded==False:
-            youhao_el = self.driver.find_element_by_xpath(youhao_xpath)
-            if youhao_el:
+            try:
+                youhao_el = self.driver.find_element_by_xpath(youhao_xpath)
                 youhao_el.click()
                 youhao_loaded = True
-            else:
+            finally:
                 self.driver.refresh()
 
 
@@ -155,7 +155,6 @@ class TestTemplate(unittest.TestCase):
                 sms_code = sms_el.get_attribute('value')
                 if len(sms_code) == 6:
                     founded = True
-
         #点击预约按钮
         self.waitAndClickByCss("#Rese_db_qryy_btn_v1")
 
