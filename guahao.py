@@ -142,10 +142,9 @@ class TestTemplate(unittest.TestCase):
                 WebDriverWait(self.driver, self.wait_default_second).until(
                      lambda driver: self.driver.find_element_by_xpath(youhao_xpath))
                 youhao_el = self.driver.find_element_by_xpath(youhao_xpath)
-                if youdao_el:
-                    youhao_el.click()
-                    youhao_loaded = True
-                    
+                youhao_el.click()
+                youhao_loaded = True
+
             except:
                 self.driver.refresh()
                 time.sleep(10)
@@ -157,9 +156,9 @@ class TestTemplate(unittest.TestCase):
         self.waitAndClickLastByXpath('//div[@id="ksorder_djgh_doctor"]//a[text()="预约挂号"]'.decode("utf-8"))
         self.waitAndClickSelectByCss('#Rese_db_dl_idselect', '1')
         self.waitAndClickByCss("#send_sms_code_btn")
-        time.sleep(10)
+        time.sleep(5)
         self.driver.switch_to_alert().accept();
-        self.driver.switch_to_window();
+        #self.driver.switch_to_window();
         
         #等待输入验证码
         founded = False

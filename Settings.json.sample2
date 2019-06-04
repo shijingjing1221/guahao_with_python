@@ -1,0 +1,7 @@
+{
+    "login_phone":"12345678912",
+    "login_pass":"testpass",
+    "hospital":"北京大学第三医院",
+    "department": "运动医学门诊",
+    "wait_default_second": 20
+}
