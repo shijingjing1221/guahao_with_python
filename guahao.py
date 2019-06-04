@@ -14,6 +14,8 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 import json
 
@@ -37,6 +39,7 @@ class TestTemplate(unittest.TestCase):
         self.driver.implicitly_wait(10)
         f = open("Settings.json") 
         self.settings = json.load(f)
+        self.wait_default_second = self.settings['wait_default_second']
 
     # def test_print_setting(self):
     #     print "================"
@@ -54,14 +57,14 @@ class TestTemplate(unittest.TestCase):
 
     def waitAndClickByXpath(self, xpath):
          driver = self.driver
-         WebDriverWait(driver, 1000).until(
+         WebDriverWait(driver, self.wait_default_second).until(
             lambda driver: driver.find_element_by_xpath(xpath))
          el = driver.find_element_by_xpath(xpath)
          el.click()
 
     def waitAndClickLastByXpath(self, xpath):
          driver = self.driver
-         WebDriverWait(driver, 1000).until(
+         WebDriverWait(driver, self.wait_default_second).until(
             lambda driver: driver.find_elements_by_xpath(xpath))
          elements = driver.find_elements_by_xpath(xpath)
          length = len(elements)
@@ -70,21 +73,21 @@ class TestTemplate(unittest.TestCase):
     
     def waitAndClickByCss(self, selector):
          driver = self.driver
-         WebDriverWait(driver, 1000).until(
+         WebDriverWait(driver, self.wait_default_second).until(
             lambda driver: self.driver.find_element_by_css_selector(selector))
          el = self.driver.find_element_by_css_selector(selector)
          el.click()
 
     def waitAndClickSelectByCss(self, selector, value):
         driver = self.driver
-        WebDriverWait(driver, 1000).until(
+        WebDriverWait(driver, self.wait_default_second).until(
             lambda driver: self.driver.find_element_by_css_selector(selector))
         driver.find_element_by_css_selector(selector).find_element_by_xpath("//option[@value='" +value+ "']").click()
 
 
     def waitAndSendKey(self, selector, sendKeysValue):
          driver = self.driver 
-         WebDriverWait(driver, 1000).until(
+         WebDriverWait(driver, self.wait_default_second).until(
             lambda driver: self.driver.find_elements_by_css_selector(selector))
          el = self.driver.find_elements_by_css_selector(selector)[0]
          el.send_keys(sendKeysValue)
@@ -93,7 +96,7 @@ class TestTemplate(unittest.TestCase):
 
     def waitAndSendKeyWithChinese(self, selector, sendKeysValue):
          driver = self.driver 
-         WebDriverWait(driver, 1000).until(
+         WebDriverWait(driver, self.wait_default_second).until(
             lambda driver: self.driver.find_elements_by_css_selector(selector))
          el = self.driver.find_elements_by_css_selector(selector)[0]
          el.send_keys(sendKeysValue.decode("utf-8"))
@@ -101,7 +104,7 @@ class TestTemplate(unittest.TestCase):
 
     def waitAndClickByLinkText(self, link_text):
         driver = self.driver 
-        WebDriverWait(driver, 10000).until(
+        WebDriverWait(driver, self.wait_default_second).until(
             lambda driver: self.driver.find_element_by_link_text(link_text.decode("utf-8")))
         el = driver.find_element_by_link_text(link_text.decode("utf-8"))
         el.click()
@@ -132,18 +135,29 @@ class TestTemplate(unittest.TestCase):
         #driver.find_elements_by_xpath(xpath)
         #self.waitAndClickByXpath()
         youhao_loaded=False
+        refresh_count=0
         while youhao_loaded==False:
             try:
+                refresh_count = refresh_count + 1
+                WebDriverWait(self.driver, self.wait_default_second).until(
+                     lambda driver: self.driver.find_element_by_xpath(youhao_xpath))
                 youhao_el = self.driver.find_element_by_xpath(youhao_xpath)
-                youhao_el.click()
-                youhao_loaded = True
-            finally:
+                if youdao_el:
+                    youhao_el.click()
+                    youhao_loaded = True
+                    
+            except:
                 self.driver.refresh()
+                time.sleep(10)
+                print "%d times refresh" %(refresh_count)
+            finally:
+                print "finally"
 
 
         self.waitAndClickLastByXpath('//div[@id="ksorder_djgh_doctor"]//a[text()="预约挂号"]'.decode("utf-8"))
         self.waitAndClickSelectByCss('#Rese_db_dl_idselect', '1')
         self.waitAndClickByCss("#send_sms_code_btn")
+        time.sleep(10)
         self.driver.switch_to_alert().accept();
         self.driver.switch_to_window();
         
